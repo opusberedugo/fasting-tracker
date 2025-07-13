@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fasting Tracker</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: #f5f5f5;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: start;
+      padding: 2rem;
+      min-height: 100vh;
+    }
+    
+    .logo {
+      font-size: 4rem;
+      color: #4a5568;
+      margin-bottom: 1rem;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+    }
+    
+    h1 {
+      margin: 0 0 1rem 0;
+      font-weight: 700;
+      font-size: 2.5rem;
+      color: #2d3748;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      text-align: center;
+    }
+    
+    .timer-section {
+      background: white;
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      margin-bottom: 2rem;
+      text-align: center;
+      min-width: 300px;
+    }
+    
+    .timer-label {
+      font-size: 1.2rem;
+      color: #718096;
+      margin-bottom: 1rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    #timer {
+      font-size: 3rem;
+      font-weight: 700;
+      color: #2d3748;
+      margin-bottom: 1rem;
+      font-family: 'Courier New', monospace;
+    }
+    
+    .btn-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      width: 100%;
+      max-width: 400px;
+      margin-bottom: 2rem;
+    }
+    
+    .btn-grid button {
+      padding: 1.5rem 1rem;
+      border: 2px solid #e2e8f0;
+      background: white;
+      color: #2d3748;
+      border-radius: 15px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .btn-grid button:hover {
+      background: #4299e1;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+    
+    .btn-grid button.active {
+      background: #38a169;
+      color: white;
+      border-color: #38a169;
+    }
+    
+    .btn-number {
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+    
+    .btn-text {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+    
+    .controls {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      margin-bottom: 1rem;
+      width: 100%;
+      max-width: 400px;
+      display: none;
+    }
+    
+    .controls.show {
+      display: block;
+    }
+    
+    .control-group {
+      margin-bottom: 1rem;
+    }
+    
+    .control-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: #2d3748;
+    }
+    
+    .control-group input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+    
+    .control-group input:focus {
+      outline: none;
+      border-color: #4299e1;
+    }
+    
+    .start-btn {
+      width: 100%;
+      padding: 1rem;
+      background: #38a169;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .start-btn:hover {
+      background: #2f855a;
+      transform: translateY(-1px);
+    }
+    
+    .info-panel {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+    
+    .break-time {
+      font-size: 1.1rem;
+      color: #e53e3e;
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+    
+    .next-water {
+      font-size: 1rem;
+      color: #3182ce;
+      font-weight: 500;
+    }
+    
+    .stop-btn {
+      width: 100%;
+      padding: 1rem;
+      background: #e53e3e;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 1rem;
+    }
+    
+    .stop-btn:hover {
+      background: #c53030;
+      transform: translateY(-1px);
+    }
+    
+    .notification-btn {
+      background: #805ad5;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 25px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 1rem;
+    }
+    
+    .notification-btn:hover {
+      background: #6b46c1;
+    }
+  </style>
+</head>
+<body>
+  <div class="logo"><i class="fas fa-cross"></i></div>
+  <h1>Fasting Tracker</h1>
+  
+  <div class="timer-section">
+    <div class="timer-label">Fasting Time</div>
+    <div id="timer">00:00:00</div>
+  </div>
+  
+  <div class="btn-grid">
+    <button onclick="selectFasting(1)">
+      <span class="btn-number">1</span>
+      <span class="btn-text">day</span>
+    </button>
+    <button onclick="selectFasting(3)">
+      <span class="btn-number">3</span>
+      <span class="btn-text">day</span>
+    </button>
+    <button onclick="selectFasting(5)">
+      <span class="btn-number">5</span>
+      <span class="btn-text">day</span>
+    </button>
+    <button onclick="selectFasting(7)">
+      <span class="btn-number">7</span>
+      <span class="btn-text">day</span>
+    </button>
+    <button onclick="selectFasting(14)">
+      <span class="btn-number">14</span>
+      <span class="btn-text">day</span>
+    </button>
+    <button onclick="selectFasting(21)">
+      <span class="btn-number">21</span>
+      <span class="btn-text">day</span>
+    </button>
+    <button onclick="selectFasting(30)">
+      <span class="btn-number">30</span>
+      <span class="btn-text">day</span>
+    </button>
+    <button onclick="selectFasting(50)">
+      <span class="btn-number">50</span>
+      <span class="btn-text">day</span>
+    </button>
+    <button onclick="selectFasting(100)">
+      <span class="btn-number">100</span>
+      <span class="btn-text">days</span>
+    </button>
+  </div>
+  
+  <div class="controls" id="controls">
+    <div class="control-group">
+      <label for="breakTime">Break Time (HH:MM)</label>
+      <input type="time" id="breakTime" value="12:00">
+    </div>
+    <button class="start-btn" onclick="startFasting()">Start Fasting</button>
+  </div>
+  
+  <div class="info-panel" id="infoPanel" style="display: none;">
+    <div class="break-time" id="breakTimeDisplay"></div>
+    <div class="next-water" id="nextWaterDisplay"></div>
+    <button class="stop-btn" onclick="resetFasting()">Reset Fast</button>
+  </div>
+  
+  <button class="notification-btn" onclick="enableNotifications()">Enable Notifications</button>
+
+  <script>
+    let fastingEnd;
+    let timerInterval;
+    let selectedDays = 0;
+    let waterInterval;
+    let nextWaterTime;
+    let customBreakTime;
+
+    function formatTime(ms) {
+      const totalSeconds = Math.floor(ms / 1000);
+      const days = Math.floor(totalSeconds / 86400);
+      const hours = Math.floor((totalSeconds % 86400) / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+      
+      if (days > 0) {
+        return `${days}d ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+      } else {
+        return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+      }
+    }
+
+    function updateTimer() {
+      const now = new Date();
+      const diff = fastingEnd - now;
+      
+      if (diff <= 0) {
+        clearInterval(timerInterval);
+        clearInterval(waterInterval);
+        document.getElementById("timer").textContent = "Fast Complete!";
+        notify("🎉 Your fast is complete! Time to break your fast.");
+        return;
+      }
+      
+      document.getElementById("timer").textContent = formatTime(diff);
+      
+      // Check for water reminder
+      if (nextWaterTime && now >= nextWaterTime) {
+        notify("💧 Time to drink water! Stay hydrated during your fast.");
+        scheduleNextWater();
+      }
+      
+      // Check for break time
+      if (customBreakTime && now >= customBreakTime && customBreakTime > now - 60000) {
+        notify("⏰ Break time! Take a moment to rest and reflect.");
+      }
+    }
+
+    function selectFasting(days) {
+      selectedDays = days;
+      
+      // Clear active states
+      document.querySelectorAll('.btn-grid button').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      // Set active state
+      event.target.classList.add('active');
+      
+      // If there's already a fast running, extend it
+      if (fastingEnd && fastingEnd > new Date()) {
+        extendFasting(days);
+        return;
+      }
+      
+      // Show controls for days > 14
+      const controls = document.getElementById('controls');
+      if (days > 14) {
+        controls.classList.add('show');
+      } else {
+        controls.classList.remove('show');
+        startFasting();
+      }
+    }
+
+    function startFasting() {
+      const now = new Date();
+      fastingEnd = new Date(now.getTime() + selectedDays * 24 * 60 * 60 * 1000);
+      
+      // Store in memory (not localStorage due to Claude restrictions)
+      window.fastingData = {
+        endTime: fastingEnd,
+        days: selectedDays,
+        startTime: now
+      };
+
+      // Handle break time for long fasts
+      if (selectedDays > 14) {
+        const breakTimeInput = document.getElementById('breakTime').value;
+        const [hours, minutes] = breakTimeInput.split(':').map(Number);
+        customBreakTime = new Date(now);
+        customBreakTime.setHours(hours, minutes, 0, 0);
+        
+        // If break time is earlier in the day, set it for tomorrow
+        if (customBreakTime <= now) {
+          customBreakTime.setDate(customBreakTime.getDate() + 1);
+        }
+        
+        document.getElementById('breakTimeDisplay').textContent = 
+          `Break Time: ${customBreakTime.toLocaleTimeString()}`;
+        
+        // Schedule water reminders every 3 hours
+        scheduleNextWater();
+      }
+
+      // Hide controls and show info panel
+      document.getElementById('controls').classList.remove('show');
+      document.getElementById('infoPanel').style.display = 'block';
+
+      clearInterval(timerInterval);
+      timerInterval = setInterval(updateTimer, 1000);
+      updateTimer();
+    }
+
+    function scheduleNextWater() {
+      const now = new Date();
+      nextWaterTime = new Date(now.getTime() + 3 * 60 * 60 * 1000); // 3 hours from now
+      
+      document.getElementById('nextWaterDisplay').textContent = 
+        `Next Water Reminder: ${nextWaterTime.toLocaleTimeString()}`;
+    }
+
+    function extendFasting(additionalDays) {
+      if (!fastingEnd) return;
+      
+      const additionalTime = additionalDays * 24 * 60 * 60 * 1000;
+      fastingEnd = new Date(fastingEnd.getTime() + additionalTime);
+      
+      // Update stored data
+      window.fastingData.endTime = fastingEnd;
+      window.fastingData.days += additionalDays;
+      
+      // Check if we need to show advanced controls
+      const totalDays = window.fastingData.days;
+      if (totalDays > 14) {
+        const controls = document.getElementById('controls');
+        if (!controls.classList.contains('show')) {
+          controls.classList.add('show');
+          document.getElementById('infoPanel').style.display = 'none';
+        }
+      }
+      
+      updateTimer();
+      notify(`⏰ Fast extended by ${additionalDays} day${additionalDays > 1 ? 's' : ''}! Total fast: ${totalDays} days`);
+    }
+
+    function resetFasting() {
+      clearInterval(timerInterval);
+      clearInterval(waterInterval);
+      
+      // Reset UI
+      document.getElementById('timer').textContent = '00:00:00';
+      document.getElementById('infoPanel').style.display = 'none';
+      document.getElementById('controls').classList.remove('show');
+      
+      // Clear active states
+      document.querySelectorAll('.btn-grid button').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      // Clear stored data
+      window.fastingData = null;
+      fastingEnd = null;
+      nextWaterTime = null;
+      customBreakTime = null;
+      selectedDays = 0;
+    }
+
+    function enableNotifications() {
+      if ('Notification' in window) {
+        Notification.requestPermission().then(permission => {
+          if (permission === 'granted') {
+            notify('✅ Notifications enabled! You\'ll receive fasting reminders.');
+          }
+        });
+      } else {
+        alert('This browser does not support notifications');
+      }
+    }
+
+    function notify(message) {
+      if ('Notification' in window && Notification.permission === "granted") {
+        new Notification('Fasting Tracker', {
+          body: message,
+          icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>'
+        });
+      }
+    }
+
+    // Initialize on page load
+    document.addEventListener("DOMContentLoaded", () => {
+      // Check if there's an ongoing fast
+      if (window.fastingData && window.fastingData.endTime) {
+        fastingEnd = new Date(window.fastingData.endTime);
+        selectedDays = window.fastingData.days;
+        
+        if (fastingEnd > new Date()) {
+          document.getElementById('infoPanel').style.display = 'block';
+          timerInterval = setInterval(updateTimer, 1000);
+          updateTimer();
+          
+          if (selectedDays > 14) {
+            scheduleNextWater();
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
